@@ -1,0 +1,65 @@
+services:
+  app:
+    image: davidcrty/databasement:1
+    container_name: databasement
+    restart: unless-stopped
+    ports:
+    - 2226:2226
+    environment:
+      APP_URL: ${APP_URL:-http://localhost:2226}
+      APP_KEY: ${APP_KEY}
+      APP_DISPLAY_TIMEZONE: Asia/Jakarta
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /data/database.sqlite
+      APP_DEBUG: 'false'
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+      BACKUP_VERIFY_FILES: 'true'
+      BACKUP_VERIFY_FILES_CRON: 0 4 * * *
+    volumes:
+    - ${DATA_DIR:-./data}:/data
+    - ${BACKUP_DIR:-./data/backups}:/backups
+    networks:
+    - internal
+    - shared-db-net
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:2226/health
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  worker:
+    image: davidcrty/databasement:1
+    container_name: databasement-worker
+    restart: unless-stopped
+    command: "sh -c \"php artisan db:wait --check-migrations &&\n       php artisan queue:work --queue=backups,default\n       --tries=3 --timeout=3600 --sleep=3 --max-jobs=1000\"\n"
+    environment:
+      APP_URL: ${APP_URL:-http://localhost:2226}
+      APP_KEY: ${APP_KEY}
+      APP_DISPLAY_TIMEZONE: Asia/Jakarta
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /data/database.sqlite
+      APP_DEBUG: 'false'
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+      BACKUP_VERIFY_FILES: 'true'
+      BACKUP_VERIFY_FILES_CRON: 0 4 * * *
+    volumes:
+    - ${DATA_DIR:-./data}:/data
+    - ${BACKUP_DIR:-./data/backups}:/backups
+    networks:
+    - internal
+    - shared-db-net
+    depends_on:
+      app:
+        condition: service_healthy
+networks:
+  internal:
+    driver: bridge
+  shared-db-net:
+    external: true
+    name: network-shared-db

@@ -1,0 +1,24 @@
+name: big-bear-glances
+services:
+  big-bear-glances:
+    container_name: big-bear-glances
+    environment:
+    - GLANCES_OPT=-w
+    - TZ=${TZ:-Asia/Jakarta}
+    hostname: big-bear-glances
+    image: nicolargo/glances:4.3.0.8-full
+    pid: host
+    ports:
+    - mode: ingress
+      target: 61208
+      published: '61208'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: /var/run/docker.sock
+      target: /var/run/docker.sock
+      read_only: true
+      bind:
+        create_host_path: true
+    network_mode: host

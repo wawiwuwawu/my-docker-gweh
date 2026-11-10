@@ -1,0 +1,31 @@
+name: big-bear-portainer
+services:
+  app:
+    container_name: big-bear-portainer
+    hostname: big-bear-portainer
+    image: portainer/portainer-ce:2.33.1-alpine
+    ports:
+    - mode: ingress
+      target: 8000
+      published: '8000'
+      protocol: tcp
+    - mode: ingress
+      target: 9000
+      published: '9000'
+      protocol: tcp
+    - mode: ingress
+      target: 9443
+      published: '9443'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./data
+      target: /data
+      bind:
+        create_host_path: true
+    - type: bind
+      source: /var/run/docker.sock
+      target: /var/run/docker.sock
+      bind:
+        create_host_path: true

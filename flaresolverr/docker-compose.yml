@@ -1,0 +1,19 @@
+name: flaresolverr
+services:
+  flaresolverr:
+    container_name: flaresolverr
+    environment:
+      CAPTCHA_SOLVER: none
+      LOG_HTML: 'false'
+      LOG_LEVEL: info
+      PGID: '1000'
+      PUID: '1000'
+      TZ: ${TZ:-Asia/Jakarta}
+      UMASK: '002'
+    hostname: flaresolverr
+    image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
+    ports:
+    - target: 8191
+      published: '8191'
+      protocol: tcp
+    restart: unless-stopped

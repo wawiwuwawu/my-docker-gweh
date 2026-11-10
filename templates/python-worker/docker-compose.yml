@@ -1,0 +1,16 @@
+# Python worker/bot: no published port, restart on crash, state on a bind so
+# cached scrapes and session files survive a recreate.
+services:
+  worker:
+    build: .
+    container_name: ${APP_NAME:-python-worker}
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

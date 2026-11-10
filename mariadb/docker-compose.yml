@@ -1,0 +1,24 @@
+name: mariadb
+services:
+  mariadb:
+    container_name: mariadb
+    environment:
+    - MYSQL_DATABASE=casaos
+    - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    - MYSQL_USER=casaos
+    - PGID=1000
+    - PUID=1000
+    - REMOTE_SQL=${REMOTE_SQL:-}
+    - TZ=${TZ:-Asia/Jakarta}
+    hostname: mariadb
+    image: linuxserver/mariadb:11.4.5
+    ports:
+    - 127.0.0.1:3306:3306
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./config
+      target: /config
+    networks:
+    - default

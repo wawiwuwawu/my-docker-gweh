@@ -1,0 +1,16 @@
+services:
+  jenkins:
+    image: jenkins/jenkins:2.590
+    container_name: jenkins-server
+    # The docker.sock mount below is what enables Docker-in-CI workflows.
+    # Do NOT add `privileged: true` or `user: root` on top of it — the socket
+    # mount alone is sufficient for Jenkins agents to reach the host daemon.
+    ports:
+    - 8030:8080
+    - 50000:50000
+    volumes:
+    - jenkins_home:/var/jenkins_home
+    - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+volumes:
+  jenkins_home: null

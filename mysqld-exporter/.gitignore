@@ -1,0 +1,3 @@
+# Real credentials live in config/.my.cnf — never commit it.
+config/.my.cnf
+.env

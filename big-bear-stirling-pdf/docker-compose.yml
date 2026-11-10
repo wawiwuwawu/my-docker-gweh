@@ -1,0 +1,22 @@
+services:
+  stirling-pdf:
+    image: stirlingtools/stirling-pdf:2.14.0
+    container_name: big-bear-stirling-pdf
+    restart: unless-stopped
+    ports:
+    - 8023:8080
+    environment:
+    - CSRF_DISABLED=false
+    - DEFAULT_LOCALE=en-US
+    - DOCKER_ENABLE_SECURITY=false
+    - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
+    - LANGS=en_US
+    - SECURITY_ENABLE_LOGIN=true
+    - SECURITY_INITIALLOGIN_PASSWORD=${SECURITY_INITIALLOGIN_PASSWORD}
+    - SECURITY_INITIALLOGIN_USERNAME=${SECURITY_INITIALLOGIN_USERNAME:-admin}
+    volumes:
+    - stirling-tessdata:/usr/share/tessdata
+    - stirling-configs:/configs
+volumes:
+  stirling-tessdata: null
+  stirling-configs: null

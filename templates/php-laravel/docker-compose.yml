@@ -1,0 +1,48 @@
+# Laravel behind nginx, with MySQL. Copy into your project root, fill .env,
+# then: docker compose up -d --build
+services:
+  app:
+    build: .
+    container_name: ${APP_NAME:-laravel}-fpm
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - app-storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    image: nginx:1.30-alpine
+    container_name: ${APP_NAME:-laravel}-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - app-storage:/var/www/html/storage:ro
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: ${APP_NAME:-laravel}-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+      MYSQL_USER: ${DB_USERNAME:-laravel}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
+  app-storage:

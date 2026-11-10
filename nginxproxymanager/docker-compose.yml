@@ -1,0 +1,24 @@
+name: nginxproxymanager
+services:
+  nginxproxymanager:
+    container_name: nginxproxymanager
+    hostname: nginxproxymanager
+    image: jc21/nginx-proxy-manager:2.12.3
+    ports:
+    - target: 80
+      published: '80'
+      protocol: tcp
+    - target: 443
+      published: '443'
+      protocol: tcp
+    - target: 81
+      published: '81'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./data
+      target: /data
+    - type: bind
+      source: ./etc-letsencrypt
+      target: /etc/letsencrypt

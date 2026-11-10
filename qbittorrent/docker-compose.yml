@@ -1,0 +1,26 @@
+name: qbittorrent
+services:
+  qbittorrent:
+    container_name: qbittorrent
+    environment:
+      PGID: '1000'
+      PUID: '1000'
+      TZ: ${TZ:-Asia/Jakarta}
+      UMASK: '002'
+    hostname: qbittorrent
+    image: ghcr.io/hotio/qbittorrent:release-5.0.4
+    ports:
+    - target: 8080
+      published: '8181'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./config
+      target: /config
+    - type: bind
+      source: ${DOWNLOADS_DIR:-./data/downloads}
+      target: /DATA/Downloads
+    - type: bind
+      source: ${DATA_ROOT:-./data}
+      target: /Data

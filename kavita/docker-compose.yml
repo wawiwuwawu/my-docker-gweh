@@ -1,0 +1,17 @@
+services:
+  kavita:
+    image: jvmilazz0/kavita:0.9.1
+    container_name: kavita
+    environment:
+    - TZ=${TZ:-Asia/Jakarta}
+    - PUID=1000
+    - PGID=1000
+    volumes:
+    - ./config:/kavita/config
+    - ${MANGA_DIR:-./data/manga}:/manga
+    - ${LIGHTNOVEL_DIR:-./data/lightnovel}:/ln
+    - ${DOUJIN_DIR:-./data/doujin}:/doujin
+    - ${MAJALAH_DIR:-./data/majalah}:/majalah
+    ports:
+    - 5000:5000
+    restart: unless-stopped

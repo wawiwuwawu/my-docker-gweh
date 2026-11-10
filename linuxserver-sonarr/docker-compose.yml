@@ -1,0 +1,29 @@
+name: linuxserver-sonarr
+services:
+  app:
+    environment:
+      PGID: '1000'
+      PUID: '1000'
+      TZ: ${TZ:-Asia/Jakarta}
+    image: linuxserver/sonarr:4.0.20
+    ports:
+    - target: 8989
+      published: '8989'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./config
+      target: /config
+    - type: bind
+      source: ${TV_DIR:-./data/tv}
+      target: /tv
+    - type: bind
+      source: ${DOWNLOADS_DIR:-./data/downloads}
+      target: /DATA/Downloads
+    - type: bind
+      source: ${ANIME_MEDIA_DIR:-./data/anime}
+      target: /tv_anime
+    - type: bind
+      source: ${ANIME_HDD_DIR:-./data/anime-hdd}
+      target: /hdd4tb

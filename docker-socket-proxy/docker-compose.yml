@@ -1,0 +1,18 @@
+# Reconstructed from `docker inspect` — this container was started with `docker run`,
+# there was no compose file on the host.
+#
+# SECURITY: this publishes the Docker API on 0.0.0.0:2375 with no TLS and no auth.
+# Anyone who can reach that port controls the host (root-equivalent). Keep it bound
+# to 127.0.0.1, put it behind a reverse proxy with auth, or do not run it at all.
+services:
+  proxy:
+    image: alpine/socat:1.8.1.3
+    container_name: docker-socket-proxy
+    restart: unless-stopped
+    command:
+      - TCP-LISTEN:2375,fork,reuseaddr
+      - UNIX-CONNECT:/var/run/docker.sock
+    ports:
+      - "127.0.0.1:2375:2375"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro

@@ -1,0 +1,28 @@
+name: anaconda3
+services:
+  anaconda3:
+    # NOTE: this runs `conda install jupyterlab` on EVERY container start —
+    # slow (minutes) and requires internet at boot. For production use, build
+    # a custom image that bakes JupyterLab in:
+    #   FROM continuumio/anaconda3:2024.10-1
+    #   RUN conda install -c conda-forge jupyterlab -y --quiet
+    command:
+    - /bin/bash
+    - -c
+    - conda install -c conda-forge jupyterlab -y --quiet && jupyter lab --notebook-dir=/opt/notebooks --ip='*' --port=8888 --no-browser --allow-root
+    container_name: anaconda3
+    environment:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      PATH: /opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    hostname: anaconda3
+    image: continuumio/anaconda3:2024.10-1
+    ports:
+    - target: 8888
+      published: '8888'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ${NOTEBOOKS_DIR:-./data/notebooks}
+      target: /opt/notebooks

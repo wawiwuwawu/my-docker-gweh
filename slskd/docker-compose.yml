@@ -1,0 +1,30 @@
+services:
+  slskd:
+    image: slskd/slskd:0.26.2
+    container_name: slskd
+    environment:
+    - SLSKD_UID=1000
+    - SLSKD_GID=1000
+    - TZ=${TZ:-Asia/Jakarta}
+    - SLSKD_SLSK_USERNAME=${SLSKD_SLSK_USERNAME:-slskd}
+    - SLSKD_SLSK_PASSWORD=${SLSKD_SLSK_PASSWORD}
+    - SLSKD_API_KEY=${SLSKD_API_KEY}
+    ports:
+    - 5030:5030
+    - 50300:50300
+    - 50300:50300/udp
+    volumes:
+    - ./config:/app/data
+    - ${DOWNLOADS_DIR:-./data/downloads}:/app/downloads
+    restart: unless-stopped
+  soularr:
+    image: ghcr.io/mrusse/soularr:1.2.3
+    container_name: soularr
+    ports:
+    - 8265:8265
+    environment:
+    - TZ=${TZ:-Asia/Jakarta}
+    volumes:
+    - ./config-soularr:/data
+    - ${DOWNLOADS_DIR:-./data/downloads}:/downloads
+    restart: unless-stopped

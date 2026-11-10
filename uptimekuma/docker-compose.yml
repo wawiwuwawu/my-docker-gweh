@@ -1,0 +1,15 @@
+name: uptimekuma
+services:
+  uptimekuma:
+    container_name: uptimekuma
+    hostname: uptimekuma
+    image: louislam/uptime-kuma:1.23.16
+    ports:
+    - target: 3001
+      published: '3001'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./data
+      target: /app/data

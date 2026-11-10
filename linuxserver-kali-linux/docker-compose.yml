@@ -1,0 +1,25 @@
+name: linuxserver-kali-linux
+services:
+  app:
+    environment:
+      PGID: ${PGID:-1000}
+      PUID: ${PUID:-1000}
+      SUBFOLDER: ''
+      TITLE: ''
+      TZ: ${TZ:-Asia/Jakarta}
+    image: linuxserver/kali-linux:version-3b400208
+    ports:
+    - target: 3000
+      published: '3000'
+      protocol: tcp
+    - target: 3001
+      published: '3002'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./config
+      target: /config
+    # NOTE: docker.sock is intentionally NOT mounted here. Mounting it into a
+    # Kali container whose web UI is exposed would give full root access to the
+    # host. If docker access is ever needed, use docker-socket-proxy instead.

@@ -1,0 +1,16 @@
+services:
+  nginx:
+    image: linuxserver/nginx:1.30.6
+    container_name: nginx-portrainer
+    restart: unless-stopped
+    environment:
+    - PUID=1000
+    - PGID=1000
+    - TZ=${TZ:-Asia/Jakarta}
+    ports:
+    - 8081:80
+    - 448:443
+    volumes:
+    - type: bind
+      source: ./config
+      target: /config

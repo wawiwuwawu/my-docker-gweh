@@ -1,0 +1,15 @@
+services:
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: mailhog
+    restart: unless-stopped
+    ports:
+    # SMTP and web UI; bound to localhost only (no auth on the UI)
+    - 127.0.0.1:1025:1025
+    - 127.0.0.1:8025:8025
+    networks:
+    - shared-db-net
+networks:
+  shared-db-net:
+    external: true
+    name: network-shared-db

@@ -1,0 +1,20 @@
+services:
+  omniroute:
+    image: diegosouzapw/omniroute:3.8.53
+    container_name: omniroute
+    restart: unless-stopped
+    stop_grace_period: 40s
+    ports:
+    - ${LAN_IP:-127.0.0.1}:20129:20128
+    environment:
+      NODE_ENV: production
+      PORT: 20128
+      HOSTNAME: 0.0.0.0
+      DATA_DIR: /app/data
+      OMNIROUTE_MIGRATIONS_DIR: /app/migrations
+      OMNIROUTE_MEMORY_MB: 1024
+      NODE_OPTIONS: --max-old-space-size=1024
+      RATE_LIMIT_MAX_WAIT_MS: 3600000
+      OMNIROUTE_DIRECT_HEADERS_TIMEOUT_MS: 3600000
+    volumes:
+    - ./data:/app/data

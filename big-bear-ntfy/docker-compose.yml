@@ -1,0 +1,24 @@
+name: big-bear-ntfy
+services:
+  app:
+    command:
+    - serve
+    environment:
+      TZ: ${TZ:-Asia/Jakarta}
+    image: binwiederhier/ntfy:v2.25.0
+    ports:
+    - target: 80
+      published: '7200'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./data/cache
+      target: /var/cache/ntfy
+      bind:
+        create_host_path: true
+    - type: bind
+      source: ./data/config
+      target: /etc/ntfy
+      bind:
+        create_host_path: true

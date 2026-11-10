@@ -1,0 +1,11 @@
+services:
+  koharu:
+    image: ghcr.io/mayocream/koharu:0.46.0
+    container_name: koharu
+    restart: unless-stopped
+    ports:
+    - 4000:4000
+    volumes:
+    - ${DATA_DIR:-./data}:/home/koharu/.local/share/Koharu
+    - ${IMPORTS_DIR:-./data/imports}:/imports:ro
+    command: /usr/local/bin/koharu --headless --host 0.0.0.0 --port 4000

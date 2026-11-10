@@ -1,0 +1,15 @@
+name: vaultwarden
+services:
+  vaultwarden:
+    container_name: vaultwarden
+    hostname: vaultwarden
+    image: vaultwarden/server:1.37.5
+    ports:
+    - target: 80
+      published: '10380'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./data
+      target: /data

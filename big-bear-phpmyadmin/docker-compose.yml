@@ -1,0 +1,20 @@
+name: big-bear-phpmyadmin
+services:
+  phpmyadmin:
+    container_name: big-bear-phpmyadmin
+    environment:
+    - PMA_HOST=${PMA_HOST:-host.docker.internal}
+    - PMA_PASSWORD=${PMA_PASSWORD}
+    - PMA_PORT=3306
+    - PMA_USER=root
+    - UPLOAD_LIMIT=10M
+    hostname: big-bear-phpmyadmin
+    image: phpmyadmin/phpmyadmin:5.2.2
+    ports:
+    - mode: ingress
+      target: 80
+      published: '127.0.0.1:8080'
+      protocol: tcp
+    restart: unless-stopped
+    networks:
+    - default

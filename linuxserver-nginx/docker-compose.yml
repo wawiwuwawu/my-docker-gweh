@@ -1,0 +1,28 @@
+name: linuxserver-nginx
+services:
+  app:
+    environment:
+    - NGINX_AUTORELOAD=
+    - NGINX_AUTORELOAD_WATCHLIST=
+    - PGID=1000
+    - PUID=1000
+    - TZ=${TZ:-Asia/Jakarta}
+    image: linuxserver/nginx:1.28.0
+    ports:
+    - target: 80
+      published: '8089'
+      protocol: tcp
+    - target: 443
+      published: '449'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./config
+      target: /config/nginx/site-confs
+    - type: bind
+      source: ./config/www/arsip-soal-uas-uts
+      target: /var/www/html
+    networks:
+    - default
+    hostname: ''

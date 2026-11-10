@@ -1,0 +1,25 @@
+services:
+  mysqld-exporter:
+    image: prom/mysqld-exporter:v0
+    container_name: mysqld-exporter
+    restart: unless-stopped
+    volumes:
+    - ./config/.my.cnf:/.my.cnf:ro
+    ports:
+    - ${LAN_IP:-127.0.0.1}:9104:9104
+    networks:
+    - shared-db-net
+  postgres-exporter-app1:
+    image: prometheuscommunity/postgres-exporter:v0
+    container_name: pg-exporter-app1
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: ${DATA_SOURCE_NAME}
+    ports:
+    - ${LAN_IP:-127.0.0.1}:9187:9187
+    networks:
+    - shared-db-net
+networks:
+  shared-db-net:
+    external: true
+    name: network-shared-db

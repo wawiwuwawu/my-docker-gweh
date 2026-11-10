@@ -1,0 +1,67 @@
+services:
+  db-mysql:
+    image: mysql:8.0
+    container_name: mysql-shared
+    restart: unless-stopped
+    ports:
+    - 127.0.0.1:3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: db_mysql_utama
+      MYSQL_USER: usermysql
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+    - mysql-data:/var/lib/mysql
+    networks:
+    - shared-db-net
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    container_name: phpmyadmin-shared
+    restart: unless-stopped
+    ports:
+    - 127.0.0.1:8089:80
+    environment:
+      PMA_HOST: db-mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${PMA_PASSWORD}
+    networks:
+    - shared-db-net
+    depends_on:
+    - db-mysql
+  db-postgres:
+    image: postgres:15-alpine
+    container_name: postgres-shared
+    restart: unless-stopped
+    ports:
+    - 127.0.0.1:5432:5432
+    environment:
+      POSTGRES_USER: user_postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: db_postgres_utama
+    volumes:
+    - postgres-data:/var/lib/postgresql/data
+    networks:
+    - shared-db-net
+  pgadmin:
+    image: dpage/pgadmin4:9.19
+    container_name: pgadmin-shared
+    restart: unless-stopped
+    ports:
+    - 127.0.0.1:8090:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    networks:
+    - shared-db-net
+    depends_on:
+    - db-postgres
+networks:
+  shared-db-net:
+    name: network-shared-db
+    driver: bridge
+volumes:
+  mysql-data:
+    driver: local
+  postgres-data:
+    driver: local

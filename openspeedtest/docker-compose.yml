@@ -1,0 +1,11 @@
+name: openspeedtest
+services:
+  openspeedtest:
+    container_name: openspeedtest
+    hostname: openspeedtest
+    image: openspeedtest/latest:v2.0.6
+    ports:
+    - target: 3000
+      published: '3004'
+      protocol: tcp
+    restart: unless-stopped

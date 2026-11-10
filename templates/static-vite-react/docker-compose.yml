@@ -1,0 +1,17 @@
+# Static SPA (Vite build output) served by nginx.
+# VITE_* values are inlined at build time, so rebuild after changing them.
+services:
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+    container_name: ${APP_NAME:-spa}
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

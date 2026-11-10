@@ -1,0 +1,12 @@
+# Runtime secrets and state — never commit
+.env
+.env.*
+!.env.example
+
+# Bind-mount data and local artefacts
+data/
+**/data/
+*.db
+*.sqlite
+*.sqlite3
+*.log

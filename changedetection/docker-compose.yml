@@ -1,0 +1,29 @@
+services:
+  changedetection:
+    image: dgtlmoon/changedetection.io:0.70
+    container_name: changedetection
+    hostname: changedetection
+    volumes:
+    - changedetection-data:/datastore
+    ports:
+    - 5005:5000
+    restart: unless-stopped
+    environment:
+    - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000
+    depends_on:
+    - playwright-chrome
+  playwright-chrome:
+    image: dgtlmoon/sockpuppetbrowser:0.0.3
+    container_name: playwright-chrome
+    hostname: playwright-chrome
+    cap_add:
+    - SYS_ADMIN
+    restart: unless-stopped
+    environment:
+    - SCREEN_WIDTH=1920
+    - SCREEN_HEIGHT=1080
+    - SCREEN_DEPTH=24
+    - CONNECTION_TIMEOUT=60000
+    - MAX_CONCURRENT_SESSIONS=3
+volumes:
+  changedetection-data: null

@@ -1,0 +1,9 @@
+# Example client config for mysqld-exporter.
+# Copy to config/.my.cnf (gitignored pattern: keep real credentials out of git)
+# and create a MySQL user with PROCESS, REPLICATION CLIENT, SELECT on
+# performance_schema / information_schema.
+[client]
+host=host.docker.internal
+port=3306
+user=exporter
+password=change-me

@@ -1,0 +1,17 @@
+name: linuxserver-prowlarr
+services:
+  app:
+    environment:
+      PGID: '1000'
+      PUID: '1000'
+      TZ: ${TZ:-Asia/Jakarta}
+    image: linuxserver/prowlarr:2.7.0
+    ports:
+    - target: 9696
+      published: '9696'
+      protocol: tcp
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: ./config
+      target: /config
