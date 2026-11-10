@@ -101,6 +101,8 @@ docker network create network-shared-db   # or start mysql-shared first
 | `openspeedtest` | openspeedtest | openspeedtest/latest:v2.0.6 | — | — |
 | `openwebui` | openwebui | ghcr.io/open-webui/open-webui:v0.13.3-slim | — | — |
 | `paperless-ngx` | broker, db, gotenberg, tika, webserver | docker.io/library/redis:7<br>docker.io/library/postgres:16<br>docker.io/gotenberg/gotenberg:8<br>docker.io/apache/tika:4.2.0<br>ghcr.io/paperless-ngx/paperless-ngx:3.4.2 | — | yes |
+| `postgis-geoserver` | db, geoserver | postgis/postgis:17-3.6<br>docker.osgeo.org/geoserver:2.28.6 | — | yes |
+| `postgis-mapserver` | db, mapserver | postgis/postgis:17-3.6<br>camptocamp/mapserver:8.6-gdal3.12 | — | yes |
 | `qbittorrent` | qbittorrent | ghcr.io/hotio/qbittorrent:release-5.0.4 | — | yes |
 | `slskd` | slskd, soularr | slskd/slskd:0.26.2<br>ghcr.io/mrusse/soularr:1.2.3 | — | yes |
 | `uptimekuma` | uptimekuma | louislam/uptime-kuma:1.23.16 | — | — |

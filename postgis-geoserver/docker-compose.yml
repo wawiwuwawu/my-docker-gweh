@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgis/postgis:17-3.6
+    container_name: postgis-geoserver-db
+    restart: unless-stopped
+    ports:
+    - 127.0.0.1:5434:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # Database aplikasi (ERP) — opsional: biarkan kosong di .env bila tidak
+      # dipakai; init di ./db-init akan melewatinya otomatis
+      APP_DB_NAME: ${APP_DB_NAME:-}
+      APP_WEB_USER: ${APP_WEB_USER:-}
+      APP_WEB_PASSWORD: ${APP_WEB_PASSWORD:-}
+      APP_MIGRATOR_USER: ${APP_MIGRATOR_USER:-}
+      APP_MIGRATOR_PASSWORD: ${APP_MIGRATOR_PASSWORD:-}
+    volumes:
+    - postgis-data:/var/lib/postgresql/data
+    - ./db-init:/docker-entrypoint-initdb.d:ro
+    networks:
+    - gis-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  geoserver:
+    image: docker.osgeo.org/geoserver:2.28.6
+    container_name: postgis-geoserver
+    restart: unless-stopped
+    ports:
+    - ${LAN_IP:-127.0.0.1}:8091:8080
+    environment:
+      GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD}
+      # Set true untuk produksi (tanpa contoh layer bawaan)
+      SKIP_DEMO_DATA: ${SKIP_DEMO_DATA:-false}
+      # JVM memory
+      EXTRA_JAVA_OPTS: ${EXTRA_JAVA_OPTS:--Xms256m -Xmx1g}
+      # Nilai awal koneksi PostGIS — dipakai saat menambah store di web UI
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USERNAME: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+    - geoserver-data:/opt/geoserver_data
+    networks:
+    - gis-net
+    depends_on:
+      db:
+        condition: service_healthy
+networks:
+  gis-net:
+    name: network-postgis-geoserver
+    driver: bridge
+volumes:
+  postgis-data:
+    driver: local
+  geoserver-data:
+    driver: local

@@ -1,0 +1,54 @@
+MAP
+  NAME "gis-demo"
+  SIZE 800 600
+  UNITS meters
+  EXTENT 95 0 142 -12
+  CONFIG "MS_ERRORFILE" "stderr"
+
+  WEB
+    METADATA
+      "ows_enable_request" "*"
+      "wms_enable_request" "*"
+      "wms_title" "PostGIS Demo WMS"
+      "wms_srs" "EPSG:4326 EPSG:3857"
+      "wms_onlineresource" "http://localhost:8989/"
+      "wfs_enable_request" "*"
+      "wfs_title" "PostGIS Demo WFS"
+      "wfs_onlineresource" "http://localhost:8989/"
+    END
+  END
+
+  PROJECTION
+    "init=epsg:4326"
+  END
+
+  # Contoh layer PostGIS: tabel 'peta_coba' dengan kolom geometri 'geom'.
+  # Subselect (SELECT * FROM ...) wajib bila tabel punya kolom tipe non-spasial
+  # yang tidak bisa diparse; using srid/unique sesuaikan dengan skema Anda.
+  LAYER
+    NAME "peta_coba"
+    TYPE polygon
+    STATUS off
+    CONNECTIONTYPE postgis
+    # Ganti user/password/db agar cocok dengan .env (mapfile tidak bisa
+    # membaca env var MapServer secara langsung; pakai include atau edit manual)
+    CONNECTION "host=db port=5432 dbname=gis_db user=postgis_user password=change-me-strong-password"
+    DATA "geom FROM (SELECT id, nama, geom FROM peta_coba) AS sub USING UNIQUE id USING SRID=4326"
+    METADATA
+      "wms_title" "Peta Coba"
+      "wms_srs" "EPSG:4326"
+      "wfs_title" "Peta Coba"
+      "gml_include_items" "all"
+    END
+    PROJECTION
+      "init=epsg:4326"
+    END
+    CLASS
+      STYLE
+        COLOR 120 180 120
+        OUTLINECOLOR 40 80 40
+        WIDTH 1
+      END
+    END
+  END
+END

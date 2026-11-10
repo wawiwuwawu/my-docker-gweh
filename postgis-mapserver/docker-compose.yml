@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgis/postgis:17-3.6
+    container_name: postgis-mapserver-db
+    restart: unless-stopped
+    ports:
+    - 127.0.0.1:5433:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # Database aplikasi (ERP) — opsional: biarkan kosong di .env bila tidak
+      # dipakai; init di ./db-init akan melewatinya otomatis
+      APP_DB_NAME: ${APP_DB_NAME:-}
+      APP_WEB_USER: ${APP_WEB_USER:-}
+      APP_WEB_PASSWORD: ${APP_WEB_PASSWORD:-}
+      APP_MIGRATOR_USER: ${APP_MIGRATOR_USER:-}
+      APP_MIGRATOR_PASSWORD: ${APP_MIGRATOR_PASSWORD:-}
+    volumes:
+    - postgis-data:/var/lib/postgresql/data
+    - ./db-init:/docker-entrypoint-initdb.d:ro
+    networks:
+    - gis-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  mapserver:
+    image: camptocamp/mapserver:8.6-gdal3.12
+    container_name: postgis-mapserver
+    restart: unless-stopped
+    ports:
+    - ${LAN_IP:-127.0.0.1}:8989:80
+    environment:
+      # Mapfile dipilih via parameter ?map= pada URL; regex ini membatasi
+      # path yang diizinkan agar tidak sembarang file bisa dimuat.
+      MS_MAP_PATTERN: ^\/etc\/mapserver\/[a-z0-9._\-]+\.map$
+      MS_DEBUGLEVEL: ${MS_DEBUGLEVEL:-0}
+      MAX_PROCESSES: ${MAX_PROCESSES:-5}
+      MAX_REQUESTS_PER_PROCESS: ${MAX_REQUESTS_PER_PROCESS:-1000}
+    volumes:
+    - ./config/mapfiles:/etc/mapserver:ro
+    - ${GIS_DATA_DIR:-./data}:/mapdata:ro
+    networks:
+    - gis-net
+    depends_on:
+      db:
+        condition: service_healthy
+networks:
+  gis-net:
+    name: network-postgis-mapserver
+    driver: bridge
+volumes:
+  postgis-data:
+    driver: local
